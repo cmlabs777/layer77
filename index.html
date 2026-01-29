@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAYER VoC Management System</title>
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo">LAYER</div>
+            <div class="breadcrumb">
+                <span>Home</span>
+                <i class="fas fa-chevron-right"></i>
+                <span>VoC 관리</span>
+                <i class="fas fa-chevron-right"></i>
+                <span id="current-page">VoC 현황판</span>
+            </div>
+        </div>
+        <div class="nav-right">
+            <button class="icon-btn" id="notification-btn">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+            </button>
+            <div class="user-profile">
+                <div class="avatar">김민지</div>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Page Navigation -->
+        <div class="page-nav">
+            <button class="nav-tab active" data-page="overview">VoC 현황판</button>
+            <button class="nav-tab" data-page="collection">VoC 접수</button>
+            <button class="nav-tab" data-page="database">VoC Database</button>
+            <button class="nav-tab" data-page="dashboard">Dashboard</button>
+            <button class="nav-tab" data-page="admin" id="admin-tab" style="display:none;">Admin</button>
+        </div>
+
+        <!-- VoC Overview Page (NEW) -->
+        <div id="overview-page" class="page active">
+            <header class="page-header">
+                <div>
+                    <h1>VoC 현황판</h1>
+                    <p class="subtitle">기간별 VoC 인입 현황을 확인합니다</p>
+                </div>
+            </header>
+
+            <div class="overview-controls">
+                <div class="date-range-selector">
+                    <label>기간 선택:</label>
+                    <input type="date" id="start-date" class="input-field">
+                    <span>~</span>
+                    <input type="date" id="end-date" class="input-field">
+                    <button class="btn-primary" onclick="applyDateFilter()">조회</button>
+                </div>
+                <div class="quick-filters">
+                    <button class="filter-quick-btn" onclick="setQuickFilter('today')">오늘</button>
+                    <button class="filter-quick-btn" onclick="setQuickFilter('week')">최근 7일</button>
+                    <button class="filter-quick-btn active" onclick="setQuickFilter('month')">최근 30일</button>
+                    <button class="filter-quick-btn" onclick="setQuickFilter('quarter')">최근 3개월</button>
+                </div>
+            </div>
+
+            <div class="overview-stats-grid">
+                <div class="overview-stat-card">
+                    <div class="stat-icon" style="background: #EDE9FE; color: #7C3AED;">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">총 인입 VoC</div>
+                        <div class="stat-value" id="total-voc-count">0</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 12.5%
+                        </div>
+                    </div>
+                </div>
+                <div class="overview-stat-card">
+                    <div class="stat-icon" style="background: #DBEAFE; color: #2563EB;">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">티켓 전환율</div>
+                        <div class="stat-value" id="ticket-conversion-rate">0%</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 3.2%
+                        </div>
+                    </div>
+                </div>
+                <div class="overview-stat-card">
+                    <div class="stat-icon" style="background: #FEE2E2; color: #DC2626;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">High Impact</div>
+                        <div class="stat-value" id="high-impact-count">0</div>
+                        <div class="stat-change negative">
+                            <i class="fas fa-arrow-down"></i> 5.8%
+                        </div>
+                    </div>
+                </div>
+                <div class="overview-stat-card">
+                    <div class="stat-icon" style="background: #D1FAE5; color: #059669;">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">평균 만족도</div>
+                        <div class="stat-value" id="avg-satisfaction">0%</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i> 2.1%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container-wrapper">
+                <div class="chart-card">
+                    <h3>VoC 인입 추이</h3>
+                    <canvas id="voc-trend-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <h3>채널별 분포</h3>
+                    <canvas id="channel-chart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>카테고리별 분포</h3>
+                    <canvas id="category-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- VoC Collection Page -->
+        <div id="collection-page" class="page">
+            <header class="page-header">
+                <div>
+                    <h1>VoC 접수</h1>
+                    <p class="subtitle">외부 채널의 고객 피드백을 자동으로 수집합니다</p>
+                </div>
+            </header>
+
+            <div class="collection-grid">
+                <!-- External Crawling Card -->
+                <div class="collection-card">
+                    <div class="card-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>외부 크롤링 (External Crawling)</h3>
+                    
+                    <div class="section">
+                        <h4>플랫폼 선택</h4>
+                        <div class="platform-grid">
+                            <label class="platform-tile">
+                                <input type="checkbox" checked>
+                                <div class="platform-logo musinsa">무신사</div>
+                            </label>
+                            <label class="platform-tile">
+                                <input type="checkbox" checked>
+                                <div class="platform-logo twentynine">29cm</div>
+                            </label>
+                            <label class="platform-tile">
+                                <input type="checkbox">
+                                <div class="platform-logo other">기타1</div>
+                            </label>
+                            <label class="platform-tile">
+                                <input type="checkbox">
+                                <div class="platform-logo other">기타2</div>
+                            </label>
+                            <label class="platform-tile">
+                                <input type="checkbox">
+                                <div class="platform-logo other">기타3</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h4>API 연결 상태</h4>
+                        <div class="connection-list">
+                            <div class="connection-item">
+                                <span>무신사</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="status connected">연결됨</span>
+                            </div>
+                            <div class="connection-item">
+                                <span>29cm</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="status connected">연결됨</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h4>자동 동기화 설정</h4>
+                        <select class="input-field">
+                            <option>실시간</option>
+                            <option selected>매시간</option>
+                            <option>매일</option>
+                            <option>매주</option>
+                        </select>
+                        <div class="sync-info">
+                            <span>마지막 동기화: 2026.01.26 14:23</span>
+                            <button class="btn-secondary">지금 동기화</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Upload Card -->
+                <div class="collection-card">
+                    <div class="card-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>파일 일괄 업로드 (Bulk File Upload)</h3>
+
+                    <div class="upload-zone" id="upload-zone">
+                        <i class="fas fa-file-excel upload-icon"></i>
+                        <p class="upload-text">파일을 여기에 드래그하거나 클릭하여 업로드</p>
+                        <p class="upload-subtext">Excel (.xlsx, .xls) 또는 CSV 파일 지원</p>
+                        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" multiple hidden>
+                    </div>
+
+                    <div class="section">
+                        <h4>템플릿 다운로드</h4>
+                        <button class="btn-secondary full-width" id="download-template">
+                            <i class="fas fa-download"></i>
+                            VoC 수집 템플릿 다운로드
+                        </button>
+                        <div class="template-preview">
+                            <table>
+                                <tr>
+                                    <th>수집일시</th>
+                                    <th>채널</th>
+                                    <th>고객ID</th>
+                                    <th>VoC내용</th>
+                                    <th>카테고리</th>
+                                    <th>우선순위</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="section" id="upload-history">
+                        <h4>업로드 히스토리</h4>
+                        <div class="upload-history-list"></div>
+                    </div>
+
+                    <div class="section">
+                        <h4>파일 검증 규칙</h4>
+                        <ul class="validation-rules">
+                            <li>최대 파일 크기: 50MB</li>
+                            <li>최대 행 수: 10,000</li>
+                            <li>필수 컬럼: 수집일시, 채널, VoC내용</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-panel">
+                <h3>최근 VoC 수집 활동</h3>
+                <div id="recent-activity"></div>
+            </div>
+        </div>
+
+        <!-- VoC Database Page -->
+        <div id="database-page" class="page">
+            <header class="page-header">
+                <div>
+                    <h1>VoC Database</h1>
+                    <p class="subtitle">수집된 VoC 중 중요도가 높은 건을 선별하여 티켓으로 전환합니다</p>
+                </div>
+            </header>
+
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <div class="count-badge filter-card" data-filter="all">
+                        <span>Total: <strong id="total-count">100</strong>건</span>
+                    </div>
+                    <div class="count-badge purple filter-card" data-filter="ticketed">
+                        <span>티켓 생성됨: <strong id="ticket-count">20</strong>건</span>
+                    </div>
+                    <button class="filter-btn" id="channel-filter-btn">
+                        <i class="fas fa-filter"></i>
+                        채널 필터
+                    </button>
+                    <button class="filter-btn" id="date-filter-btn">
+                        <i class="fas fa-calendar"></i>
+                        기간 필터
+                    </button>
+                    <button class="filter-btn" id="status-filter-btn">
+                        <i class="fas fa-tag"></i>
+                        상태 필터
+                    </button>
+                    <button class="filter-btn" id="category-filter-btn">
+                        <i class="fas fa-list"></i>
+                        카테고리
+                    </button>
+                </div>
+                <div class="toolbar-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="검색..." id="search-input">
+                    </div>
+                    <button class="icon-btn" id="refresh-btn">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="btn-primary" id="create-tickets-btn" disabled>
+                        선택 항목 티켓 생성
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="table-section">
+                    <div class="table-container">
+                        <table class="voc-table">
+                            <thead>
+                                <tr>
+                                    <th class="checkbox-col">
+                                        <input type="checkbox" id="select-all">
+                                    </th>
+                                    <th>No.</th>
+                                    <th class="sortable" data-sort="ticketNumber">티켓번호 <i class="fas fa-sort"></i></th>
+                                    <th class="sortable" data-sort="date">수집일시 <i class="fas fa-sort"></i></th>
+                                    <th>채널</th>
+                                    <th>고객ID</th>
+                                    <th>VoC 내용</th>
+                                    <th>카테고리</th>
+                                    <th>감성</th>
+                                    <th class="sortable" data-sort="impact">Impact <i class="fas fa-sort"></i></th>
+                                    <th>상태</th>
+                                    <th>액션</th>
+                                </tr>
+                            </thead>
+                            <tbody id="voc-table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination">
+                        <div class="pagination-info">
+                            Showing <span id="page-start">1</span>-<span id="page-end">50</span> of <span id="total-items">100</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button class="page-btn" id="prev-page"><i class="fas fa-chevron-left"></i></button>
+                            <div id="page-numbers"></div>
+                            <button class="page-btn" id="next-page"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <select id="rows-per-page">
+                            <option value="25">25 / page</option>
+                            <option value="50" selected>50 / page</option>
+                            <option value="100">100 / page</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="stats-card">
+                        <h3>VoC 통계</h3>
+                        <div class="funnel-chart">
+                            <div class="funnel-item" style="width: 100%">
+                                <span>전체 수집</span>
+                                <strong>100건</strong>
+                            </div>
+                            <div class="funnel-item" style="width: 80%">
+                                <span>검토 대기</span>
+                                <strong>80건</strong>
+                            </div>
+                            <div class="funnel-item purple" style="width: 20%">
+                                <span>티켓 생성</span>
+                                <strong>20건</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <h3>Today's Activity</h3>
+                        <div class="today-stats">
+                            <div class="stat-row">
+                                <span>VoC 수집</span>
+                                <strong class="green">+247</strong>
+                            </div>
+                            <div class="stat-row">
+                                <span>티켓 생성</span>
+                                <strong class="purple">+12</strong>
+                            </div>
+                            <div class="stat-row">
+                                <span>Impact High 건수</span>
+                                <strong class="red">83</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <h3>티켓 생성 가이드</h3>
+                        <ol class="guide-list">
+                            <li>중요도가 높은 VoC 선택 (체크박스)</li>
+                            <li>'티켓 생성' 버튼 클릭</li>
+                            <li>자동으로 티켓 번호 부여 및 담당자 배정</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="dashboard-page" class="page">
+            <header class="page-header">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p class="subtitle">VoC 티켓 칸반 보드</p>
+                </div>
+            </header>
+            
+            <div class="kanban-board" id="kanban-board"></div>
+        </div>
+
+        <!-- Admin Page -->
+        <div id="admin-page" class="page">
+            <header class="page-header">
+                <div>
+                    <h1>사용자 관리</h1>
+                    <p class="subtitle">시스템 사용자의 권한을 관리합니다</p>
+                </div>
+            </header>
+
+            <div class="admin-card">
+                <table class="voc-table">
+                    <thead>
+                        <tr>
+                            <th>이름</th>
+                            <th>이메일</th>
+                            <th>소속팀</th>
+                            <th>현재 권한</th>
+                            <th>권한 변경</th>
+                            <th>가입일</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- VoC Detail Modal -->
+    <div class="modal-overlay" id="voc-detail-modal">
+        <div class="voc-detail-modal">
+            <div class="modal-header">
+                <h2>VoC 상세 정보</h2>
+                <button class="modal-close" onclick="closeVocModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <h3>기본 정보</h3>
+                    <div class="detail-row">
+                        <div class="detail-label">티켓 번호</div>
+                        <div class="detail-value" id="modal-ticket-number">-</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">수집 일시</div>
+                        <div class="detail-value" id="modal-date">-</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">채널</div>
+                        <div class="detail-value" id="modal-channel">-</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">고객 ID</div>
+                        <div class="detail-value" id="modal-customer-id">-</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">카테고리</div>
+                        <div class="detail-value" id="modal-category">-</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">감성 분석</div>
+                        <div class="detail-value">
+                            <select class="input-field" id="modal-sentiment">
+                                <option value="positive">😊 긍정</option>
+                                <option value="neutral">😐 중립</option>
+                                <option value="negative">😞 부정</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Impact</div>
+                        <div class="detail-value">
+                            <select class="input-field" id="modal-impact">
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">담당자</div>
+                        <div class="detail-value">
+                            <input type="text" class="input-field" id="modal-assignee-search" placeholder="담당자 검색...">
+                            <select class="input-field" id="modal-assignee" style="margin-top: 8px;">
+                                <option value="">담당자 선택</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>VoC 내용</h3>
+                    <div class="voc-full-content" id="modal-content">
+                        -
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>티켓 이름</h3>
+                    <input type="text" class="input-field" id="modal-ticket-name" placeholder="티켓 이름을 입력하세요">
+                </div>
+
+                <div class="detail-section">
+                    <h3>상태 설정</h3>
+                    <div class="status-selector">
+                        <div class="status-option" data-status="received">접수</div>
+                        <div class="status-option" data-status="reviewing">검토중</div>
+                        <div class="status-option" data-status="pending-assignment">할당대기</div>
+                        <div class="status-option" data-status="in-progress">처리중</div>
+                        <div class="status-option" data-status="monitoring">모니터링</div>
+                        <div class="status-option" data-status="closed">종료</div>
+                    </div>
+                </div>
+
+                <!-- Comments Section (NEW) -->
+                <div class="detail-section">
+                    <h3>댓글</h3>
+                    <div id="comments-list" class="comments-list"></div>
+                    <div class="comment-input-area">
+                        <textarea id="comment-input" class="input-field" placeholder="댓글을 입력하세요..." rows="3"></textarea>
+                        <button class="btn-primary" onclick="addComment()" style="margin-top: 8px;">
+                            <i class="fas fa-paper-plane"></i> 댓글 작성
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeVocModal()">취소</button>
+                <button class="btn-primary" onclick="saveVocDetails()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+
+    <!-- Login/Signup Screen -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-box">
+            <div class="auth-logo">LAYER</div>
+            <div class="auth-subtitle">VoC Management System</div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+                <div class="auth-form-group">
+                    <label class="auth-form-label">이메일</label>
+                    <input type="email" id="loginEmail" class="auth-form-input" placeholder="your@email.com" required>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-form-label">비밀번호</label>
+                    <input type="password" id="loginPassword" class="auth-form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="auth-btn">로그인</button>
+                <div class="auth-toggle">
+                    계정이 없으신가요? <span class="auth-toggle-link" onclick="toggleAuthMode()">회원가입</span>
+                </div>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="auth-form hidden" onsubmit="handleSignup(event)">
+                <div class="auth-form-group">
+                    <label class="auth-form-label">이름</label>
+                    <input type="text" id="signupName" class="auth-form-input" placeholder="홍길동" required>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-form-label">이메일</label>
+                    <input type="email" id="signupEmail" class="auth-form-input" placeholder="your@email.com" required>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-form-label">비밀번호</label>
+                    <input type="password" id="signupPassword" class="auth-form-input" placeholder="••••••••" required>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-form-label">소속팀</label>
+                    <select id="signupTeam" class="auth-form-input" required>
+                        <option value="">팀을 선택하세요</option>
+                        <option value="CX팀">CX팀</option>
+                        <option value="상품팀">상품팀</option>
+                        <option value="배송팀">배송팀</option>
+                        <option value="기술팀">기술팀</option>
+                    </select>
+                </div>
+                <button type="submit" class="auth-btn">회원가입</button>
+                <div class="auth-toggle">
+                    이미 계정이 있으신가요? <span class="auth-toggle-link" onclick="toggleAuthMode()">로그인</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
