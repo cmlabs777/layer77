@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 챌린지 중간 과제 | 손태영팀</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0A0E27;
+    --indigo: #4F55E8;
+    --indigo-light: #EEF0FF;
+    --teal: #00C9B1;
+    --gray-50: #F8F9FC;
+    --gray-100: #F1F3F9;
+    --gray-200: #E4E8F0;
+    --gray-500: #8892A4;
+    --gray-700: #3D4557;
+    --gray-900: #141824;
+    --positive: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+  }
+
+  body {
+    font-family: 'Pretendard', 'Inter', -apple-system, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── 커버 ── */
+  .cover {
+    background: var(--navy);
+    color: #fff;
+    padding: 72px 64px 64px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -120px; right: -120px;
+    width: 480px; height: 480px;
+    background: radial-gradient(circle, rgba(79,85,232,.35) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: 30%;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(0,201,177,.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cover-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(79,85,232,.25);
+    border: 1px solid rgba(79,85,232,.5);
+    color: #A5B4FC;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 28px;
+  }
+  .cover-badge::before { content: '●'; color: var(--teal); font-size: 8px; }
+  .cover-title {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin-bottom: 16px;
+  }
+  .cover-title span { color: var(--teal); }
+  .cover-subtitle {
+    font-size: 16px;
+    color: rgba(255,255,255,.55);
+    max-width: 560px;
+    margin-bottom: 48px;
+    font-weight: 400;
+  }
+  .cover-meta {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .cover-meta-label { font-size: 11px; color: rgba(255,255,255,.4); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+  .cover-meta-value { font-size: 15px; font-weight: 600; color: #fff; }
+  .cover-divider { width: 1px; height: 40px; background: rgba(255,255,255,.12); }
+  .members {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .member-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .member-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); }
+
+  /* ── 레이아웃 ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 56px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* ── 섹션 ── */
+  .section {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid var(--gray-200);
+    overflow: hidden;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .section-num {
+    width: 32px; height: 32px;
+    background: var(--indigo);
+    color: #fff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gray-900);
+  }
+  .section-body { padding: 28px; }
+
+  /* ── 프로젝트 카드 ── */
+  .project-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 640px) { .project-grid { grid-template-columns: 1fr; } }
+
+  .project-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .project-card-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--indigo);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .project-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .project-card-desc {
+    font-size: 13.5px;
+    color: var(--gray-700);
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    background: var(--indigo-light);
+    color: var(--indigo);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: .02em;
+  }
+  .tag.teal { background: #ECFDF5; color: #059669; }
+
+  /* ── AI 적용 방식 ── */
+  .flow {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .flow-item {
+    flex: 1;
+    min-width: 140px;
+    text-align: center;
+    position: relative;
+  }
+  .flow-item:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -12px;
+    top: 18px;
+    color: var(--gray-500);
+    font-size: 16px;
+  }
+  .flow-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin: 0 auto 10px;
+    background: var(--indigo-light);
+  }
+  .flow-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 4px;
+  }
+  .flow-sub {
+    font-size: 11px;
+    color: var(--gray-500);
+  }
+
+  .ai-detail {
+    margin-top: 24px;
+    background: var(--navy);
+    border-radius: 12px;
+    padding: 20px 24px;
+    color: rgba(255,255,255,.85);
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+  .ai-detail strong { color: var(--teal); font-weight: 600; }
+  .ai-detail ul { padding-left: 18px; margin-top: 8px; }
+  .ai-detail ul li { margin-bottom: 5px; }
+
+  /* ── 효과 수치 ── */
+  .effect-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 640px) { .effect-grid { grid-template-columns: 1fr 1fr; } }
+
+  .effect-card {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .effect-num {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 6px;
+    color: var(--indigo);
+  }
+  .effect-num.teal { color: var(--teal); }
+  .effect-num.positive { color: var(--positive); }
+  .effect-label {
+    font-size: 12px;
+    color: var(--gray-500);
+    font-weight: 500;
+  }
+
+  .effect-desc {
+    background: var(--gray-50);
+    border-left: 3px solid var(--indigo);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    font-size: 14px;
+    color: var(--gray-700);
+    line-height: 1.7;
+  }
+
+  /* ── 어려움 ── */
+  .challenge-list { display: flex; flex-direction: column; gap: 12px; }
+  .challenge-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px;
+    background: var(--gray-50);
+    border-radius: 10px;
+    border: 1px solid var(--gray-200);
+  }
+  .challenge-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: #FEF3C7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .challenge-icon.red { background: #FEE2E2; }
+  .challenge-icon.purple { background: #EDE9FE; }
+  .challenge-content { flex: 1; }
+  .challenge-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 4px;
+  }
+  .challenge-desc {
+    font-size: 13px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  /* ── 향후 계획 ── */
+  .plan-list { display: flex; flex-direction: column; gap: 0; }
+  .plan-item {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .plan-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .plan-step {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--indigo);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .plan-step.outline {
+    background: transparent;
+    border: 2px solid var(--gray-200);
+    color: var(--gray-500);
+  }
+  .plan-content { flex: 1; }
+  .plan-phase {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--indigo);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .plan-phase.gray { color: var(--gray-500); }
+  .plan-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 5px;
+  }
+  .plan-desc {
+    font-size: 13px;
+    color: var(--gray-700);
+    line-height: 1.65;
+  }
+  .plan-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .plan-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--indigo-light);
+    color: var(--indigo);
+  }
+  .plan-tag.gray { background: var(--gray-100); color: var(--gray-500); }
+
+  /* ── 푸터 ── */
+  .footer {
+    background: var(--navy);
+    color: rgba(255,255,255,.45);
+    text-align: center;
+    padding: 28px 32px;
+    font-size: 12.5px;
+  }
+  .footer strong { color: rgba(255,255,255,.75); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- 커버 -->
+<div class="cover">
+  <div class="cover-badge">AI 업무혁신 Challenge 2026 · Track B · 중간 과제</div>
+  <h1 class="cover-title">AI 기반 External<br><span>Intelligence 자동화</span><br>시스템 구축</h1>
+  <p class="cover-subtitle">외부 채널의 브랜드 반응을 실시간 수집·분석해 팀별 인사이트를 자동 전달하는 CX 데이터 허브</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">팀명</span>
+      <span class="cover-meta-value">손태영팀</span>
+    </div>
+    <div class="cover-divider"></div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">소속</span>
+      <span class="cover-meta-value">고객경험팀</span>
+    </div>
+    <div class="cover-divider"></div>
+    <div class="cover-meta-item">
+      <span class="cover-meta-label">제출일</span>
+      <span class="cover-meta-value">2026년 4월</span>
+    </div>
+  </div>
+  <div style="margin-top:28px;">
+    <div class="members">
+      <div class="member-chip"><span class="dot"></span>김태희 팀장</div>
+      <div class="member-chip"><span class="dot"></span>손창모 과장</div>
+      <div class="member-chip"><span class="dot"></span>박준영 대리</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 1. 수행 내용 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <div class="section-title">현재까지 실제로 수행한 내용</div>
+    </div>
+    <div class="section-body">
+      <div class="project-grid">
+        <div class="project-card">
+          <div class="project-card-num">Project 01</div>
+          <div class="project-card-title">SNS 브랜드 모니터링<br>자동화 시스템</div>
+          <div class="project-card-desc">
+            블로그·인스타그램·쓰레드·트위터/X·틱톡·유튜브 6개 채널에서 브랜드 언급 게시글을 매일 자동 수집하고, Claude AI가 감성 분류 및 인사이트 리포트를 생성해 Teams 채널로 자동 발송합니다.
+          </div>
+          <div class="tag-list">
+            <span class="tag">Make.com</span>
+            <span class="tag">Apify</span>
+            <span class="tag">Claude API</span>
+            <span class="tag">Naver API</span>
+            <span class="tag">Google API</span>
+            <span class="tag">Teams Webhook</span>
+            <span class="tag">6채널</span>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-card-num">Project 02</div>
+          <div class="project-card-title">브랜드 뉴스 클리핑<br>자동화 시스템</div>
+          <div class="project-card-desc">
+            네이버 뉴스 API로 브랜드 관련 기사를 매일 오전 9시에 자동 수집해 Teams 채널에 발송합니다. Google Apps Script 기반으로 별도 서버 없이 운영되며, 주요 기사 10건을 카드 형태로 전달합니다.
+          </div>
+          <div class="tag-list">
+            <span class="tag teal">Naver News API</span>
+            <span class="tag teal">Google Apps Script</span>
+            <span class="tag teal">Claude</span>
+            <span class="tag teal">Teams Webhook</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. AI 적용 방식 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <div class="section-title">AI를 어떻게 적용했는가</div>
+    </div>
+    <div class="section-body">
+      <div class="flow">
+        <div class="flow-item">
+          <div class="flow-icon">📥</div>
+          <div class="flow-label">데이터 수집</div>
+          <div class="flow-sub">Make.com<br>Apify</div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-icon">🧹</div>
+          <div class="flow-label">정제·필터링</div>
+          <div class="flow-sub">관련성 검증<br>중복 제거</div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-icon">🤖</div>
+          <div class="flow-label">Claude AI 분석</div>
+          <div class="flow-sub">Sonnet 모델<br>JSON 출력</div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-icon">📊</div>
+          <div class="flow-label">리포트 생성</div>
+          <div class="flow-sub">Adaptive Card<br>시각화</div>
+        </div>
+        <div class="flow-item">
+          <div class="flow-icon">📨</div>
+          <div class="flow-label">Teams 발송</div>
+          <div class="flow-sub">매일 자동<br>전사 공유</div>
+        </div>
+      </div>
+
+      <div class="ai-detail">
+        <strong>Claude API 역할 상세</strong>
+        <ul>
+          <li>수집된 게시글을 1단계 사전 필터링(브랜드 관련성 판별) 후 유효 데이터만 분류</li>
+          <li>각 게시글을 <strong>긍정 / 중립 / 부정</strong>으로 감성 분류하고 플랫폼별 비율 산출</li>
+          <li>오늘의 핵심 트렌드, 브랜드 전략 인사이트, 모니터링 필요 이슈를 자연어로 생성</li>
+          <li>분석 결과를 구조화된 <strong>JSON</strong>으로 출력 → Teams Adaptive Card에 자동 맵핑</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 효과 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <div class="section-title">진행 과정에서 확인된 효과 또는 변화</div>
+    </div>
+    <div class="section-body">
+      <div class="effect-grid">
+        <div class="effect-card">
+          <div class="effect-num">90<span style="font-size:20px;font-weight:600;">%</span></div>
+          <div class="effect-label">업무 시간 절감</div>
+        </div>
+        <div class="effect-card">
+          <div class="effect-num teal">18h</div>
+          <div class="effect-label">주당 절약 시간</div>
+        </div>
+        <div class="effect-card">
+          <div class="effect-num positive">매일</div>
+          <div class="effect-label">자동 리포트 발송</div>
+        </div>
+      </div>
+      <div class="effect-desc">
+        기존에는 담당자가 6개 플랫폼을 직접 순회하며 게시글을 수집·정리하는 데 <strong>주 약 20시간</strong>이 소요됐습니다.
+        현재 시스템으로 전환 후 시스템 유지보수 포함 <strong>주 약 2시간</strong>으로 단축되었으며,
+        매일 오전 Teams 채널에 감성 분석 리포트가 자동 발송되어 팀 전체가 별도 작업 없이 브랜드 동향을 파악할 수 있게 되었습니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 어려움 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <div class="section-title">예상과 달랐던 점 또는 어려움</div>
+    </div>
+    <div class="section-body">
+      <div class="challenge-list">
+        <div class="challenge-item">
+          <div class="challenge-icon">⚠️</div>
+          <div class="challenge-content">
+            <div class="challenge-title">LLM JSON 출력 불안정</div>
+            <div class="challenge-desc">Claude API가 가끔 응답에 백틱(```) 마크다운 코드블록을 포함하거나 JSON 구문 오류를 발생시켜 자동화 파이프라인이 중단되는 경우가 있었습니다. 프롬프트 엔지니어링으로 빈도를 줄였지만 근본적 해결을 위해 Tool Use(Function Calling) 도입을 검토 중입니다.</div>
+          </div>
+        </div>
+        <div class="challenge-item">
+          <div class="challenge-icon red">🔢</div>
+          <div class="challenge-content">
+            <div class="challenge-title">숫자 카운팅 오류</div>
+            <div class="challenge-desc">LLM에게 게시글 수 집계를 맡기면 실제 데이터 수와 다르게 출력되는 경우가 발생했습니다. LLM은 카운팅보다 언어 이해에 특화되어 있어, 집계는 코드(Make.com)가 처리하고 분석만 AI에 위임하는 방식으로 전환했습니다.</div>
+          </div>
+        </div>
+        <div class="challenge-item">
+          <div class="challenge-icon purple">💸</div>
+          <div class="challenge-content">
+            <div class="challenge-title">반복 테스트 시 토큰 비용 누적</div>
+            <div class="challenge-desc">코드 한 줄을 수정할 때마다 전체 파이프라인을 실행해야 하는 구조 특성상, Apify 크롤링과 Claude API 호출이 매번 반복되어 테스트 단계에서 예상보다 많은 비용이 발생했습니다. 테스트용 샘플 데이터 고정, 단위 테스트 분리 등의 방식으로 개선했습니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 향후 계획 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <div class="section-title">향후 계획</div>
+    </div>
+    <div class="section-body">
+      <div class="plan-list">
+        <div class="plan-item">
+          <div class="plan-step">1</div>
+          <div class="plan-content">
+            <div class="plan-phase">1차 완료 · 현재</div>
+            <div class="plan-title">SNS 모니터링 + 뉴스 클리핑 자동화</div>
+            <div class="plan-desc">6채널 SNS 감성 분석 및 브랜드 뉴스 스크래핑 시스템 운영 중. 매일 Teams로 자동 발송.</div>
+            <div class="plan-tags">
+              <span class="plan-tag">Make.com</span>
+              <span class="plan-tag">Apify</span>
+              <span class="plan-tag">Claude API</span>
+              <span class="plan-tag">Naver API</span>
+              <span class="plan-tag">Google Apps Script</span>
+            </div>
+          </div>
+        </div>
+        <div class="plan-item">
+          <div class="plan-step">2</div>
+          <div class="plan-content">
+            <div class="plan-phase">2차 제출 목표</div>
+            <div class="plan-title">1차 시스템 고도화 + 상품 리뷰 자동분석 시스템 신규 구축</div>
+            <div class="plan-desc">Claude Tool Use 도입으로 JSON 출력 안정성 강화 및 분석 정확도 개선. 무신사·29CM·네이버 등 외부 플랫폼의 상품 리뷰를 수집·분석해 상품별 VOC 인사이트를 자동 생성하는 시스템을 신규 개발할 예정입니다.</div>
+            <div class="plan-tags">
+              <span class="plan-tag">Tool Use</span>
+              <span class="plan-tag">Apify</span>
+              <span class="plan-tag">리뷰 분석</span>
+              <span class="plan-tag">Google Apps Script</span>
+            </div>
+          </div>
+        </div>
+        <div class="plan-item">
+          <div class="plan-step outline">3</div>
+          <div class="plan-content">
+            <div class="plan-phase gray">중장기 방향</div>
+            <div class="plan-title">분석 고도화 및 활용 범위 확대</div>
+            <div class="plan-desc">구축된 시스템의 분석 품질을 지속 개선하고, 수집 채널 및 키워드 확장을 통해 더 넓은 범위의 브랜드 인텔리전스를 제공하는 방향으로 발전시킵니다.</div>
+            <div class="plan-tags">
+              <span class="plan-tag gray">채널 확장</span>
+              <span class="plan-tag gray">분석 고도화</span>
+              <span class="plan-tag gray">전사 공유</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <strong>손태영팀</strong> · 고객경험팀 · AI 챌린지 2026 중간 과제<br>
+  <span style="margin-top:6px;display:block;">Powered by Claude AI · Make.com · Apify · Google Apps Script</span>
+</div>
+
+</body>
+</html>
