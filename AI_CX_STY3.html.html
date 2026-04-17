@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 챌린지 중간 과제 | 손태영팀</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #FAF8F5;
+    --ink: #111111;
+    --ink2: #3A3A3A;
+    --ink3: #7A7A7A;
+    --orange: #E8490F;
+    --orange-light: #FFF0EB;
+    --rule: #E0DDD8;
+    --white: #FFFFFF;
+    --black: #111111;
+  }
+
+  body {
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ══ 커버 ══ */
+  .cover {
+    background: var(--ink);
+    color: #fff;
+    padding: 80px 72px 72px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-accent {
+    position: absolute;
+    top: 0; left: 0;
+    width: 6px; height: 100%;
+    background: var(--orange);
+  }
+  .cover-track {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cover-track::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 2px;
+    background: var(--orange);
+  }
+  .cover-title {
+    font-size: clamp(36px, 5.5vw, 64px);
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -.03em;
+    margin-bottom: 24px;
+    max-width: 700px;
+  }
+  .cover-title em { font-style: normal; color: var(--orange); }
+  .cover-rule { width: 60px; height: 3px; background: var(--orange); margin-bottom: 24px; }
+  .cover-subtitle {
+    font-size: 15px;
+    color: rgba(255,255,255,.5);
+    max-width: 540px;
+    line-height: 1.75;
+    margin-bottom: 56px;
+  }
+  .cover-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(255,255,255,.1);
+  }
+  .cover-meta { display: flex; gap: 40px; flex-wrap: wrap; }
+  .cover-meta-item { display: flex; flex-direction: column; gap: 4px; }
+  .cover-meta-label { font-size: 10px; color: rgba(255,255,255,.3); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+  .cover-meta-value { font-size: 14px; font-weight: 600; color: rgba(255,255,255,.85); }
+  .cover-members { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cover-member {
+    font-size: 12px; color: rgba(255,255,255,.5);
+    padding: 4px 12px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 4px;
+  }
+
+  /* ══ KPI 바 ══ */
+  .kpi-bar {
+    background: var(--orange);
+    padding: 20px 72px;
+    display: flex;
+    gap: 0;
+    align-items: center;
+  }
+  .kpi-bar-item {
+    flex: 1;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,.25);
+    padding: 0 20px;
+  }
+  .kpi-bar-item:last-child { border-right: none; }
+  .kpi-bar-num { font-size: 28px; font-weight: 900; color: #fff; line-height: 1; letter-spacing: -.02em; }
+  .kpi-bar-label { font-size: 11px; color: rgba(255,255,255,.75); margin-top: 3px; font-weight: 500; }
+
+  /* ══ 본문 ══ */
+  .main { max-width: 900px; margin: 0 auto; padding: 0 48px 80px; }
+
+  /* ══ 섹션 ══ */
+  .section {
+    padding: 64px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section:last-child { border-bottom: none; }
+
+  .section-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .section-num {
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--orange);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+  .section-num-line {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+  .section-tag {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink3);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .section-title {
+    font-size: clamp(24px, 3.5vw, 36px);
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -.02em;
+    margin-bottom: 32px;
+  }
+  .section-title span { color: var(--orange); }
+
+  /* ══ 문제 정의 ══ */
+  .pain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 32px; }
+  @media(max-width:600px){ .pain-grid { grid-template-columns: 1fr; } }
+  .pain-card { background: var(--white); padding: 28px 24px; }
+  .pain-card:first-child { border-left: 4px solid var(--orange); }
+  .pain-card:last-child { border-left: 4px solid #CCCCCC; }
+  .pain-label {
+    font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--orange); margin-bottom: 10px;
+  }
+  .pain-card:last-child .pain-label { color: var(--ink3); }
+  .pain-title { font-size: 16px; font-weight: 800; margin-bottom: 14px; color: var(--ink); }
+  .pain-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .pain-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13.5px; color: var(--ink2); line-height: 1.55;
+    padding-bottom: 8px; border-bottom: 1px solid #F0EDE8;
+  }
+  .pain-list li:last-child { border-bottom: none; padding-bottom: 0; }
+  .pain-list li::before { content: counter(item); counter-increment: item; font-size: 11px; font-weight: 700; color: var(--orange); min-width: 16px; margin-top: 2px; }
+  .pain-list { counter-reset: item; }
+
+  .insight-block {
+    background: var(--ink);
+    padding: 24px 28px;
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .insight-block-bar { width: 3px; background: var(--orange); flex-shrink: 0; align-self: stretch; border-radius: 2px; }
+  .insight-block-text { font-size: 15px; color: rgba(255,255,255,.8); line-height: 1.7; font-weight: 400; }
+  .insight-block-text strong { color: var(--orange); font-weight: 700; }
+
+  /* ══ 수행 내용 ══ */
+  .proj-row { display: flex; flex-direction: column; gap: 2px; }
+  .proj-item { background: var(--white); padding: 28px 28px 24px; display: flex; gap: 24px; align-items: flex-start; }
+  @media(max-width:580px){ .proj-item { flex-direction: column; } }
+  .proj-item-left { width: 200px; flex-shrink: 0; }
+  .proj-item-num { font-size: 56px; font-weight: 900; line-height: 1; color: #F0EDE8; letter-spacing: -.03em; margin-bottom: 6px; }
+  .proj-item-badge {
+    display: inline-block;
+    font-size: 9.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 3px;
+  }
+  .proj-item-badge.plan { background: var(--ink); color: var(--white); }
+  .proj-item-badge.bonus { background: var(--orange); color: var(--white); }
+  .proj-item-right { flex: 1; border-left: 1px solid var(--rule); padding-left: 24px; }
+  .proj-item-title { font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 8px; line-height: 1.3; }
+  .proj-item-desc { font-size: 13.5px; color: var(--ink2); line-height: 1.7; margin-bottom: 14px; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    font-size: 10.5px; font-weight: 600; padding: 3px 10px;
+    border: 1px solid var(--rule); background: var(--bg);
+    color: var(--ink2); border-radius: 3px;
+    letter-spacing: .02em;
+  }
+  .tag.accent { border-color: var(--orange); color: var(--orange); background: var(--orange-light); }
+
+  /* ══ AI 파이프라인 ══ */
+  .pipeline-row {
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 28px;
+    background: var(--white);
+  }
+  .pipe {
+    flex: 1;
+    padding: 24px 14px;
+    text-align: center;
+    border-right: 1px solid var(--rule);
+    position: relative;
+  }
+  .pipe:last-child { border-right: none; }
+  .pipe.highlight { background: var(--ink); }
+  .pipe-n { font-size: 10px; font-weight: 800; color: var(--orange); letter-spacing: .08em; margin-bottom: 8px; }
+  .pipe.highlight .pipe-n { color: var(--orange); }
+  .pipe-icon { font-size: 20px; margin-bottom: 6px; }
+  .pipe-label { font-size: 12px; font-weight: 800; color: var(--ink); margin-bottom: 4px; }
+  .pipe.highlight .pipe-label { color: #fff; }
+  .pipe-tool { font-size: 10.5px; color: var(--ink3); line-height: 1.5; }
+  .pipe.highlight .pipe-tool { color: rgba(255,255,255,.5); }
+  .pipe-arrow {
+    position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
+    font-size: 14px; color: var(--orange); z-index: 1; font-weight: 700;
+  }
+  .pipe:last-child .pipe-arrow { display: none; }
+
+  .ai-detail {
+    border-left: 4px solid var(--orange);
+    padding: 0 0 0 24px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .ai-detail-item { display: flex; gap: 14px; align-items: flex-start; }
+  .ai-detail-step {
+    font-size: 11px; font-weight: 900; color: var(--orange);
+    min-width: 20px; margin-top: 2px; letter-spacing: .05em;
+  }
+  .ai-detail-text { font-size: 14px; color: var(--ink2); line-height: 1.65; }
+  .ai-detail-text strong { color: var(--ink); font-weight: 700; }
+
+  /* ══ Before / After ══ */
+  .ba-split {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    align-items: center;
+    margin-bottom: 32px;
+  }
+  @media(max-width:580px){ .ba-split { grid-template-columns: 1fr; } }
+  .ba-side { padding: 28px; }
+  .ba-side.before { background: var(--white); border-left: 4px solid #CCCCCC; }
+  .ba-side.after { background: var(--ink); border-left: 4px solid var(--orange); }
+  .ba-label-text { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 12px; }
+  .before .ba-label-text { color: var(--ink3); }
+  .after .ba-label-text { color: var(--orange); }
+  .ba-big { font-size: 52px; font-weight: 900; line-height: 1; letter-spacing: -.03em; margin-bottom: 12px; }
+  .before .ba-big { color: #CCCCCC; }
+  .after .ba-big { color: var(--orange); }
+  .ba-items { display: flex; flex-direction: column; gap: 7px; }
+  .ba-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; line-height: 1.5; }
+  .before .ba-item { color: var(--ink3); }
+  .after .ba-item { color: rgba(255,255,255,.7); }
+  .ba-item-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .before .ba-item-dot { background: #CCCCCC; }
+  .after .ba-item-dot { background: var(--orange); }
+  .ba-center { display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; color: var(--orange); }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+  @media(max-width:580px){ .kpi-row { grid-template-columns: repeat(2,1fr); } }
+  .kpi-item { background: var(--white); padding: 20px 16px; text-align: center; }
+  .kpi-item-num { font-size: 36px; font-weight: 900; color: var(--ink); letter-spacing: -.03em; line-height: 1; margin-bottom: 6px; }
+  .kpi-item-num span { color: var(--orange); }
+  .kpi-item-label { font-size: 11.5px; color: var(--ink3); font-weight: 500; }
+
+  /* ══ 학습과 반복 ══ */
+  .learn-grid { display: flex; flex-direction: column; gap: 2px; }
+  .learn-row { display: grid; grid-template-columns: 44px 1fr 1fr; background: var(--white); }
+  @media(max-width:580px){ .learn-row { grid-template-columns: 1fr; } }
+  .learn-idx {
+    background: var(--ink); color: var(--orange);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding-top: 24px;
+    font-size: 16px; font-weight: 900;
+  }
+  .learn-col { padding: 24px 22px; }
+  .learn-col.problem { border-right: 1px solid var(--rule); }
+  .learn-col-label {
+    font-size: 9.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+  }
+  .learn-col.problem .learn-col-label { color: #CC3333; }
+  .learn-col.solution .learn-col-label { color: #1A9660; }
+  .learn-col-label::before { content: ''; width: 18px; height: 2px; background: currentColor; display: inline-block; }
+  .learn-title { font-size: 14px; font-weight: 800; color: var(--ink); margin-bottom: 6px; }
+  .learn-desc { font-size: 13px; color: var(--ink2); line-height: 1.65; }
+
+  /* ══ 로드맵 ══ */
+  .roadmap { display: flex; flex-direction: column; gap: 0; }
+  .rm-item {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--rule);
+    padding: 28px 0;
+  }
+  .rm-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .rm-left { padding-right: 28px; border-right: 1px solid var(--rule); }
+  .rm-phase { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 4px; }
+  .rm-phase.done { color: #1A9660; }
+  .rm-phase.now { color: var(--orange); }
+  .rm-phase.future { color: var(--ink3); }
+  .rm-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; margin-top: 8px;
+  }
+  .rm-dot.done { background: #1A9660; color: #fff; }
+  .rm-dot.now { background: var(--orange); color: #fff; }
+  .rm-dot.future { background: transparent; border: 2px dashed var(--rule); color: var(--ink3); }
+  .rm-right { padding-left: 28px; }
+  .rm-title { font-size: 17px; font-weight: 800; color: var(--ink); margin-bottom: 8px; }
+  .rm-desc { font-size: 13.5px; color: var(--ink2); line-height: 1.65; margin-bottom: 12px; }
+  .rm-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .rm-tag {
+    font-size: 10.5px; font-weight: 600; padding: 3px 10px;
+    border: 1px solid var(--rule); color: var(--ink2); border-radius: 3px;
+  }
+  .rm-tag.orange { border-color: var(--orange); color: var(--orange); background: var(--orange-light); }
+  .rm-tag.muted { color: var(--ink3); }
+
+  /* ══ 푸터 ══ */
+  .footer {
+    background: var(--ink);
+    padding: 28px 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer-left { display: flex; align-items: center; gap: 12px; }
+  .footer-bar { width: 3px; height: 20px; background: var(--orange); border-radius: 2px; }
+  .footer-text { font-size: 13px; color: rgba(255,255,255,.5); }
+  .footer-text strong { color: rgba(255,255,255,.8); }
+  .footer-right { font-size: 11px; color: rgba(255,255,255,.3); letter-spacing: .05em; }
+</style>
+</head>
+<body>
+
+<!-- 커버 -->
+<div class="cover">
+  <div class="cover-accent"></div>
+  <div class="cover-track">Track B · 업무 프로세스 혁신 · 중간 과제</div>
+  <h1 class="cover-title">외부 고객 목소리를<br><em>AI가 매일 자동으로</em><br>분석합니다</h1>
+  <div class="cover-rule"></div>
+  <p class="cover-subtitle">SNS·뉴스 6개 이상 채널에서 브랜드 반응을 자동 수집하고, Claude AI가 감성 분류·인사이트 리포트를 생성해 매일 오전 Teams로 전달하는 CX 인텔리전스 자동화 시스템</p>
+  <div class="cover-footer">
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">팀명</span>
+        <span class="cover-meta-value">손태영팀</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">소속</span>
+        <span class="cover-meta-value">고객경험팀</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-label">제출</span>
+        <span class="cover-meta-value">2026년 4월</span>
+      </div>
+    </div>
+    <div class="cover-members">
+      <div class="cover-member">김태희 팀장</div>
+      <div class="cover-member">손창모 과장</div>
+      <div class="cover-member">박준영 대리</div>
+    </div>
+  </div>
+</div>
+
+<!-- KPI 바 -->
+<div class="kpi-bar">
+  <div class="kpi-bar-item">
+    <div class="kpi-bar-num">2</div>
+    <div class="kpi-bar-label">구축 시스템</div>
+  </div>
+  <div class="kpi-bar-item">
+    <div class="kpi-bar-num">6+</div>
+    <div class="kpi-bar-label">수집 채널</div>
+  </div>
+  <div class="kpi-bar-item">
+    <div class="kpi-bar-num">90%</div>
+    <div class="kpi-bar-label">업무 시간 절감</div>
+  </div>
+  <div class="kpi-bar-item">
+    <div class="kpi-bar-num">18h</div>
+    <div class="kpi-bar-label">주당 절약 시간</div>
+  </div>
+  <div class="kpi-bar-item">
+    <div class="kpi-bar-num">매일</div>
+    <div class="kpi-bar-label">자동 리포트 발송</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Problem -->
+  <div class="section">
+    <div class="section-eyebrow">
+      <span class="section-num">Problem</span>
+      <div class="section-num-line"></div>
+      <span class="section-tag">어떤 문제를 해결하려 했는가</span>
+    </div>
+    <h2 class="section-title">수동 모니터링의<br><span>구조적 한계</span>를 넘어서</h2>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-label">Pain 1 · SNS 모니터링</div>
+        <div class="pain-title">수동 모니터링의 한계</div>
+        <ul class="pain-list">
+          <li>블로그·인스타·트위터 등 채널마다 직접 접속해 검색·확인</li>
+          <li>담당자 1인이 주 20시간 이상 단순 반복 작업에 소요</li>
+          <li>모니터링 깊이와 빈도가 담당자 여건에 따라 편차 발생</li>
+          <li>이슈 발생 시 인지 시점이 늦어 초기 대응 불가</li>
+        </ul>
+      </div>
+      <div class="pain-card">
+        <div class="pain-label">Pain 2 · 뉴스 클리핑</div>
+        <div class="pain-title">브랜드 뉴스 사각지대</div>
+        <ul class="pain-list">
+          <li>브랜드 관련 뉴스를 수동으로 검색해야 하는 구조</li>
+          <li>팀 전체에 정기 공유할 수 있는 프로세스 부재</li>
+          <li>중요 보도 누락 시 대응 타이밍 놓침</li>
+          <li>담당자 부재 시 모니터링 공백 발생</li>
+        </ul>
+      </div>
+    </div>
+    <div class="insight-block">
+      <div class="insight-block-bar"></div>
+      <div class="insight-block-text">
+        핵심은 <strong>"사람이 반복하던 일을 시스템으로 대체"</strong>하는 것이 아니라,
+        <strong>기존에는 불가능했던 수준의 분석·인사이트를 AI로 실현</strong>하는 것이었습니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 01 수행 내용 -->
+  <div class="section">
+    <div class="section-eyebrow">
+      <span class="section-num">01</span>
+      <div class="section-num-line"></div>
+      <span class="section-tag">What We Built</span>
+    </div>
+    <h2 class="section-title">실제로 구축·운영 중인<br><span>두 가지 시스템</span></h2>
+    <div class="proj-row">
+      <div class="proj-item">
+        <div class="proj-item-left">
+          <div class="proj-item-num">01</div>
+          <span class="proj-item-badge plan">계획 수행</span>
+        </div>
+        <div class="proj-item-right">
+          <div class="proj-item-title">SNS 브랜드 모니터링 자동화 시스템</div>
+          <div class="proj-item-desc">Make.com + Apify로 6개 채널 게시글을 매일 자동 수집. Claude API가 브랜드 관련성 필터링 → 감성 분류(긍정/중립/부정) → 트렌드 인사이트 생성 → JSON 리포트 출력. Teams Adaptive Card로 매일 오전 자동 발송.</div>
+          <div class="tag-row">
+            <span class="tag accent">Make.com</span>
+            <span class="tag accent">Apify</span>
+            <span class="tag accent">Claude API</span>
+            <span class="tag">Naver API</span>
+            <span class="tag">Google API</span>
+            <span class="tag">Teams Webhook</span>
+          </div>
+        </div>
+      </div>
+      <div class="proj-item">
+        <div class="proj-item-left">
+          <div class="proj-item-num">02</div>
+          <span class="proj-item-badge bonus">계획 外 추가</span>
+        </div>
+        <div class="proj-item-right">
+          <div class="proj-item-title">브랜드 뉴스 클리핑 자동화 시스템</div>
+          <div class="proj-item-desc">당초 계획에 없던 기능으로, 진행 중 팀 니즈를 확인하고 추가 개발. 네이버 뉴스 API로 브랜드 관련 기사를 매일 오전 9시 자동 수집해 Teams로 발송. Claude를 활용한 시스템 구성, Google Apps Script 기반으로 별도 서버 없이 운영.</div>
+          <div class="tag-row">
+            <span class="tag accent">Naver News API</span>
+            <span class="tag accent">Google Apps Script</span>
+            <span class="tag">Claude</span>
+            <span class="tag">Teams Webhook</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 AI 적용 -->
+  <div class="section">
+    <div class="section-eyebrow">
+      <span class="section-num">02</span>
+      <div class="section-num-line"></div>
+      <span class="section-tag">How AI Was Applied</span>
+    </div>
+    <h2 class="section-title">AI를 <span>어떻게</span> 적용했는가</h2>
+    <div class="pipeline-row">
+      <div class="pipe">
+        <div class="pipe-n">01</div>
+        <div class="pipe-icon">📡</div>
+        <div class="pipe-label">수집</div>
+        <div class="pipe-tool">Make.com<br>Apify</div>
+        <div class="pipe-arrow">›</div>
+      </div>
+      <div class="pipe">
+        <div class="pipe-n">02</div>
+        <div class="pipe-icon">🧹</div>
+        <div class="pipe-label">정제</div>
+        <div class="pipe-tool">중복 제거<br>텍스트 정규화</div>
+        <div class="pipe-arrow">›</div>
+      </div>
+      <div class="pipe highlight">
+        <div class="pipe-n">03</div>
+        <div class="pipe-icon">🧠</div>
+        <div class="pipe-label">AI 분석</div>
+        <div class="pipe-tool">Claude Sonnet<br>프롬프트 엔지니어링</div>
+        <div class="pipe-arrow">›</div>
+      </div>
+      <div class="pipe">
+        <div class="pipe-n">04</div>
+        <div class="pipe-icon">📊</div>
+        <div class="pipe-label">리포트</div>
+        <div class="pipe-tool">JSON 구조화<br>Adaptive Card</div>
+        <div class="pipe-arrow">›</div>
+      </div>
+      <div class="pipe">
+        <div class="pipe-n">05</div>
+        <div class="pipe-icon">📨</div>
+        <div class="pipe-label">발송</div>
+        <div class="pipe-tool">Teams Webhook<br>매일 자동</div>
+      </div>
+    </div>
+    <div class="ai-detail">
+      <div class="ai-detail-item">
+        <span class="ai-detail-step">01</span>
+        <div class="ai-detail-text"><strong>1단계 필터링</strong> — 수집된 전체 게시글 중 브랜드와 실제 관련된 게시글만 선별. 유사 단어·무관 콘텐츠 제거.</div>
+      </div>
+      <div class="ai-detail-item">
+        <span class="ai-detail-step">02</span>
+        <div class="ai-detail-text"><strong>감성 분류</strong> — 각 게시글을 긍정/중립/부정으로 분류하고 플랫폼별 감성 비율 산출.</div>
+      </div>
+      <div class="ai-detail-item">
+        <span class="ai-detail-step">03</span>
+        <div class="ai-detail-text"><strong>인사이트 생성</strong> — 오늘의 핵심 트렌드, 브랜드 전략 시사점, 모니터링 필요 이슈를 자연어로 작성.</div>
+      </div>
+      <div class="ai-detail-item">
+        <span class="ai-detail-step">04</span>
+        <div class="ai-detail-text"><strong>구조화 출력</strong> — 분석 결과를 JSON 포맷으로 출력해 Teams Adaptive Card에 자동 맵핑.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 임팩트 -->
+  <div class="section">
+    <div class="section-eyebrow">
+      <span class="section-num">03</span>
+      <div class="section-num-line"></div>
+      <span class="section-tag">Impact · Before vs After</span>
+    </div>
+    <h2 class="section-title">도입 전후 <span>업무 변화</span></h2>
+    <div class="ba-split">
+      <div class="ba-side before">
+        <div class="ba-label-text">Before · 도입 전</div>
+        <div class="ba-big">20h<br><span style="font-size:18px;font-weight:500;color:#999">/주</span></div>
+        <div class="ba-items">
+          <div class="ba-item"><div class="ba-item-dot"></div>6개 플랫폼 수동 순회·검색</div>
+          <div class="ba-item"><div class="ba-item-dot"></div>담당자 여건에 따라 모니터링 편차</div>
+          <div class="ba-item"><div class="ba-item-dot"></div>단순 수집만 가능, 분석 부재</div>
+          <div class="ba-item"><div class="ba-item-dot"></div>이슈 인지 → 대응까지 시간 지연</div>
+        </div>
+      </div>
+      <div class="ba-center">→</div>
+      <div class="ba-side after">
+        <div class="ba-label-text">After · 도입 후</div>
+        <div class="ba-big">2h<br><span style="font-size:18px;font-weight:500;color:rgba(255,255,255,.4)">/주</span></div>
+        <div class="ba-items">
+          <div class="ba-item"><div class="ba-item-dot"></div>매일 오전 자동 수집·분석·발송</div>
+          <div class="ba-item"><div class="ba-item-dot"></div>담당자 부재에도 일정하게 운영</div>
+          <div class="ba-item"><div class="ba-item-dot"></div>감성 분류 + 트렌드 인사이트 생성</div>
+          <div class="ba-item"><div class="ba-item-dot"></div>전팀이 실시간 브랜드 동향 파악</div>
+        </div>
+      </div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-item">
+        <div class="kpi-item-num"><span>90</span>%</div>
+        <div class="kpi-item-label">업무 시간 절감</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-item-num"><span>18</span>h</div>
+        <div class="kpi-item-label">주당 절약 시간</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-item-num"><span>6</span>+</div>
+        <div class="kpi-item-label">자동화 채널 수</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-item-num" style="font-size:26px;"><span>매일</span></div>
+        <div class="kpi-item-label">자동 리포트 발송</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 학습과 반복 -->
+  <div class="section">
+    <div class="section-eyebrow">
+      <span class="section-num">04</span>
+      <div class="section-num-line"></div>
+      <span class="section-tag">Learning &amp; Iteration</span>
+    </div>
+    <h2 class="section-title">시도 → 실패 → 개선,<br><span>세 번의 반복</span></h2>
+    <div class="learn-grid">
+      <div class="learn-row">
+        <div class="learn-idx">1</div>
+        <div class="learn-col problem">
+          <div class="learn-col-label">문제</div>
+          <div class="learn-title">LLM JSON 출력 불안정</div>
+          <div class="learn-desc">Claude API가 백틱(```) 코드블록을 포함하거나 JSON 구문 오류를 발생시켜 자동화 파이프라인이 중단되는 상황이 반복됐습니다.</div>
+        </div>
+        <div class="learn-col solution">
+          <div class="learn-col-label">개선</div>
+          <div class="learn-title">프롬프트 엔지니어링으로 안정화</div>
+          <div class="learn-desc">출력 형식을 명시하는 프롬프트를 반복 개선해 오류 빈도를 낮췄습니다. 근본적 해결을 위해 Tool Use 도입을 2차 목표로 설정했습니다.</div>
+        </div>
+      </div>
+      <div class="learn-row">
+        <div class="learn-idx">2</div>
+        <div class="learn-col problem">
+          <div class="learn-col-label">문제</div>
+          <div class="learn-title">AI 카운팅 오류</div>
+          <div class="learn-desc">LLM에게 게시글 수 집계를 맡기면 실제 데이터와 다른 숫자를 출력하는 경우가 발생했습니다.</div>
+        </div>
+        <div class="learn-col solution">
+          <div class="learn-col-label">개선</div>
+          <div class="learn-title">집계는 코드, 분석은 AI</div>
+          <div class="learn-desc">집계·카운팅은 Make.com 워크플로우에서 처리하고, AI에게는 언어 이해와 인사이트 생성만 위임하는 방식으로 전환했습니다.</div>
+        </div>
+      </div>
+      <div class="learn-row">
+        <div class="learn-idx">3</div>
+        <div class="learn-col problem">
+          <div class="learn-col-label">문제</div>
+          <div class="learn-title">반복 테스트로 인한 비용 누적</div>
+          <div class="learn-desc">코드 한 줄 수정 후 전체 파이프라인을 재실행해야 해서 Apify·Claude API 호출이 반복되어 테스트 비용이 예상보다 높았습니다.</div>
+        </div>
+        <div class="learn-col solution">
+          <div class="learn-col-label">개선</div>
+          <div class="learn-title">샘플 데이터 고정 + 단위 테스트 분리</div>
+          <div class="learn-desc">테스트용 샘플 데이터를 고정해 수집 단계를 건너뛰고, 분석 모듈을 독립적으로 테스트할 수 있도록 구조를 개선했습니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 향후 계획 -->
+  <div class="section">
+    <div class="section-eyebrow">
+      <span class="section-num">05</span>
+      <div class="section-num-line"></div>
+      <span class="section-tag">Roadmap</span>
+    </div>
+    <h2 class="section-title">다음 단계로 <span>나아가는 계획</span></h2>
+    <div class="roadmap">
+      <div class="rm-item">
+        <div class="rm-left">
+          <div class="rm-phase done">완료</div>
+          <div class="rm-dot done">✓</div>
+        </div>
+        <div class="rm-right">
+          <div class="rm-title">SNS 모니터링 + 뉴스 클리핑 자동화</div>
+          <div class="rm-desc">6채널 SNS 감성 분석 및 브랜드 뉴스 스크래핑 시스템 구축 완료. 매일 오전 Teams 자동 발송 중.</div>
+          <div class="rm-tags">
+            <span class="rm-tag orange">Make.com</span>
+            <span class="rm-tag orange">Apify</span>
+            <span class="rm-tag orange">Claude API</span>
+            <span class="rm-tag">Naver API</span>
+            <span class="rm-tag">Google Apps Script</span>
+          </div>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-left">
+          <div class="rm-phase now">2차 목표</div>
+          <div class="rm-dot now">2</div>
+        </div>
+        <div class="rm-right">
+          <div class="rm-title">1차 시스템 고도화 + 상품 리뷰 자동분석 시스템 신규 구축</div>
+          <div class="rm-desc">Tool Use 도입으로 JSON 안정성 강화. 무신사·29CM·네이버 등 외부 플랫폼의 상품 리뷰를 수집·AI 분석해 상품별 VOC 인사이트를 자동 생성하는 시스템 개발. (현재 개발 진행 중)</div>
+          <div class="rm-tags">
+            <span class="rm-tag orange">Tool Use</span>
+            <span class="rm-tag orange">Apify</span>
+            <span class="rm-tag">리뷰 분석</span>
+            <span class="rm-tag">Google Apps Script</span>
+          </div>
+        </div>
+      </div>
+      <div class="rm-item">
+        <div class="rm-left">
+          <div class="rm-phase future">중장기</div>
+          <div class="rm-dot future">3</div>
+        </div>
+        <div class="rm-right">
+          <div class="rm-title">분석 고도화 및 활용 범위 확대</div>
+          <div class="rm-desc">수집 채널·키워드 확장, 경쟁 브랜드 비교 분석, 이상 신호 즉시 알림 등 CX 인텔리전스 기능을 단계적으로 고도화합니다.</div>
+          <div class="rm-tags">
+            <span class="rm-tag muted">채널 확장</span>
+            <span class="rm-tag muted">경쟁사 분석</span>
+            <span class="rm-tag muted">이상 감지</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-left">
+    <div class="footer-bar"></div>
+    <div class="footer-text"><strong>손태영팀</strong> · 고객경험팀 · AI 챌린지 2026 중간 과제</div>
+  </div>
+  <div class="footer-right">Powered by Claude AI · Make.com · Apify · Google Apps Script</div>
+</div>
+
+</body>
+</html>
