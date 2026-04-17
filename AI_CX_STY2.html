@@ -383,6 +383,30 @@
   .status-stat-num { font-size: 26px; font-weight: 900; color: var(--teal); line-height: 1; }
   .status-stat-label { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 3px; }
 
+  /* ══ 대시보드 링크 ══ */
+  .dash-link-row {
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  .dash-link-desc { flex: 1; min-width: 200px; }
+  .dash-link-desc-title { font-size: 14px; font-weight: 700; color: var(--gray-900); margin-bottom: 5px; }
+  .dash-link-desc-sub { font-size: 13px; color: var(--gray-600); line-height: 1.6; }
+  .dash-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+  .dash-chip {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; padding: 4px 11px; border-radius: 20px;
+    background: var(--gray-100); color: var(--gray-600);
+  }
+  .dash-chip .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+  .dash-open-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--navy); color: #fff;
+    font-size: 13px; font-weight: 700;
+    padding: 12px 24px; border-radius: 10px;
+    text-decoration: none; white-space: nowrap;
+    transition: opacity .15s;
+  }
+  .dash-open-btn:hover { opacity: .8; }
+
   /* ══ 푸터 ══ */
   .footer {
     background: var(--navy);
@@ -725,12 +749,39 @@
     </div>
   </div>
 
-  <!-- 5. 향후 계획 -->
+  <!-- 5. 관제 대시보드 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-icon">🖥</div>
+      <div class="card-head-text">
+        <div class="card-head-num">05 · Control Center</div>
+        <div class="card-head-title">종합 관제 대시보드</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="dash-link-row">
+        <div class="dash-link-desc">
+          <div class="dash-link-desc-title">전용 대시보드를 통해 시스템 안정성을 상시 모니터링합니다</div>
+          <div class="dash-link-desc-sub">두 시스템의 실행 상태 및 서비스 안정성을 하나의 관제 화면에서 통합 확인하고, 이상 발생 시 즉시 수동 개입이 가능한 구조로 운영합니다. 시스템이 추가되는 경우, 대시보드에 포함되어 함께 관제됩니다.</div>
+          <div class="dash-chips">
+            <span class="dash-chip"><span class="dot"></span>시스템 상태 모니터링</span>
+            <span class="dash-chip"><span class="dot"></span>이상 감지 대응</span>
+          </div>
+        </div>
+        <a href="https://script.google.com/macros/s/AKfycbx9NewSORRlCtHXRJEBXGGOmW76PP7abKqFjn4Gem_tGoQ5-FAJVE_gggZYYXfr4MFGpw/exec"
+           target="_blank" rel="noopener" class="dash-open-btn">
+          ↗ 관제 대시보드 열기
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 향후 계획 -->
   <div class="card">
     <div class="card-head">
       <div class="card-head-icon">🗺</div>
       <div class="card-head-text">
-        <div class="card-head-num">05 · Roadmap</div>
+        <div class="card-head-num">06 · Roadmap</div>
         <div class="card-head-title">향후 계획</div>
       </div>
     </div>
